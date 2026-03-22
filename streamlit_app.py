@@ -50,11 +50,6 @@ def apply_custom_styles() -> None:
             max-width: 1180px;
             padding-top: clamp(3.4rem, 7vh, 5rem);
             padding-bottom: 4rem;
-            overflow: visible;
-        }}
-        [data-testid="stAppViewContainer"],
-        [data-testid="stMain"] {{
-            overflow: visible;
         }}
         h1, h2, h3 {{
             color: {TEXT};
