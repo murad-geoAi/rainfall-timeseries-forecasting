@@ -1,118 +1,121 @@
-# Rainfall Time-Series Forecasting
+# Rainfall Forecasting App
 
-This project forecasts monthly rainfall totals for **March 2026 to October 2026** using a reproducible, leakage-free pipeline built from the daily rainfall dataset in this repository.
+This project forecasts rainfall for **March to October 2026** and provides a clean Streamlit app to explore the **days within a month that have the highest chance of rainfall**.
 
-## Objective
+## What The Project Does
 
-Forecast rainfall for:
+- trains and compares multiple rainfall forecasting models
+- selects the final model using a leakage-free validation workflow
+- forecasts monthly rainfall for March-October 2026
+- builds day-level rainfall chance profiles from historical daily rainfall behavior
+- serves the results through a deployment-ready Streamlit app
 
-- March 2026
-- April 2026
-- May 2026
-- June 2026
-- July 2026
-- August 2026
-- September 2026
-- October 2026
+## Current Best Model
 
-The project now produces:
+Latest saved run:
 
-- clean monthly training data
-- day-level rainfall chance profiles for each month
-- chronological train/validation/test evaluation
-- comparison across deep-learning and tabular baselines
-- saved evaluation metrics
-- saved backtest predictions
-- a final selected model and future forecast table
-
-## What Changed
-
-The pipeline was rebuilt around the following rules:
-
-- Daily data is resampled to monthly data in a consistent way.
-- Forecast features use only information available at the forecast origin.
-- Model selection is based on the **validation split**, not the test split.
-- The final model is retrained on all available history through **February 2026** before generating future forecasts.
-- Metrics are saved for both overall performance and horizon-by-horizon performance.
-- A daily climatology artifact is generated so a Streamlit app can rank the most likely rainy days within any selected month.
-
-## Models Compared
-
-- `SeasonalNaive`
-- `Ridge`
-- `ElasticNet`
-- `RandomForest`
-- `ExtraTrees`
-- `XGBoost`
-- `VanillaLSTM`
-- `GRU`
-- `BiLSTM`
-
-## Latest Run
-
-The latest reproducible run selected **BiLSTM** on validation RMSE.
-
+- Model: `BiLSTM`
 - Validation RMSE: `88.26`
 - Test RMSE: `110.92`
-- Last observed month in the data: `2026-02-01`
-- Forecast window: `2026-03-01` to `2026-10-01`
 
-Forecast snapshot from the latest run:
+Saved forecast file:
 
-| Month | Forecast Rainfall (mm) | Pattern |
-| --- | ---: | --- |
-| Mar 2026 | 32.13 | Near normal |
-| Apr 2026 | 180.56 | Slightly wetter than usual |
-| May 2026 | 398.33 | Slightly wetter than usual |
-| Jun 2026 | 571.47 | Near normal |
-| Jul 2026 | 557.88 | Near normal |
-| Aug 2026 | 504.08 | Slightly wetter than usual |
-| Sep 2026 | 392.32 | Slightly drier than usual |
-| Oct 2026 | 161.92 | Near normal |
+- [future_forecasts.csv](future_forecasts.csv)
 
-## How To Run
+## App
 
-From the project folder:
+Main Streamlit entrypoint:
+
+- [app.py](app.py)
+
+App implementation:
+
+- [streamlit_app.py](streamlit_app.py)
+
+The app lets a user:
+
+- choose any month and year
+- use the saved forecast total or enter a custom monthly rainfall total
+- see the day with the highest rainfall chance
+- view the top rainy days for the month
+- download the full day-by-day rainfall profile as CSV
+
+## Install
+
+For the Streamlit app only:
+
+```bash
+pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+For the full training and evaluation pipeline:
+
+```bash
+pip install -r requirements-training.txt
+python train.py
+python evaluate.py
+```
+
+## Which File To Run
+
+To check the app interface locally in your terminal, run:
+
+```bash
+python -m streamlit run app.py
+```
+
+If that does not work in your active Python, use the interpreter where Streamlit is installed:
+
+```bash
+C:\ProgramData\Anaconda3\python.exe -m streamlit run app.py
+```
+
+For retraining the forecasting pipeline, run:
 
 ```bash
 python train.py
-python evaluate.py
-python -m streamlit run streamlit_app.py
 ```
 
-`train.py` rebuilds all outputs from scratch.
+For reading the saved evaluation summary, run:
 
-`evaluate.py` reads the saved outputs and prints a summary.
+```bash
+python evaluate.py
+```
 
-`streamlit_app.py` launches an interactive app where a user can:
+## Streamlit Community Cloud
 
-- choose any month and year
-- use the saved forecast total, climatology, or a custom monthly rainfall total
-- see which day has the greatest rainfall chance
-- inspect a ranked day-by-day rainfall profile
-- download the daily profile as CSV
+Deployment notes are here:
 
-For the app, run `python train.py` first if you want the saved 2026 forecast to appear automatically. The app still works without that file by falling back to historical monthly averages or user input.
+- [DEPLOY_STREAMLIT_CLOUD.md](DEPLOY_STREAMLIT_CLOUD.md)
 
-If `python -m streamlit` is not available in your active interpreter, install the dependencies from `requirements.txt` first. On this machine, the app was smoke-tested successfully through the local Anaconda Streamlit interpreter.
+The repository is already prepared for Community Cloud with:
 
-## Output Files
+- lightweight app dependencies in `requirements.txt`
+- a simple app entrypoint in `app.py`
+- pinned hosted Python version in `runtime.txt`
+- Streamlit theme config in `.streamlit/config.toml`
+- precomputed CSV artifacts so the hosted app does not need to retrain models
 
-- `best_model.json`
-- `evaluation_metrics.csv`
-- `evaluation_metrics_by_horizon.csv`
-- `backtest_predictions.csv`
-- `future_forecasts.csv`
-- `monthly_rainfall_dataset.csv`
-- `daily_rainfall_climatology.csv`
-- `model_comparison.png`
-- `test_sequence_comparison.png`
-- `future_forecast_march_october_2026.png`
-- `streamlit_app.py`
+When you create the app on Streamlit Community Cloud:
 
-## Notes For Presentation
+- connect your GitHub repository
+- keep the full project folder in the repo
+- set the main file path to `app.py`
 
-- The selected model is chosen on validation performance to avoid test leakage.
-- Some tabular models have very strong test scores, especially `ExtraTrees`, but the final model choice follows the leakage-free validation rule.
-- The forecast file also includes an anomaly-based monthly pattern label and an 80% uncertainty interval.
-- The Streamlit app estimates the most likely rainy days using historical day-of-month rainfall occurrence and rainy-day intensity, weighted slightly toward recent years.
+## Important Files
+
+- [train.py](train.py)
+- [evaluate.py](evaluate.py)
+- [forecasting_pipeline.py](forecasting_pipeline.py)
+- [daily_rainfall_profiles.py](daily_rainfall_profiles.py)
+- [monthly_rainfall_dataset.csv](monthly_rainfall_dataset.csv)
+- [daily_rainfall_climatology.csv](daily_rainfall_climatology.csv)
+- [evaluation_metrics.csv](evaluation_metrics.csv)
+- [future_forecast_march_october_2026.png](future_forecast_march_october_2026.png)
+
+## LinkedIn Post
+
+A ready-to-use LinkedIn post is included here:
+
+- [LINKEDIN_POST.md](LINKEDIN_POST.md)
