@@ -19,10 +19,10 @@
 
 Artifacts that should stay in the repository for the hosted app:
 
-- `future_forecasts.csv`
-- `monthly_rainfall_dataset.csv`
-- `daily_rainfall_climatology.csv`
-- `best_model.json`
+- `outputs/forecasts/future_forecasts.csv`
+- `data/processed/monthly_rainfall_dataset.csv`
+- `data/processed/daily_rainfall_climatology.csv`
+- `artifacts/metadata/best_model.json`
 
 ## Why This Setup Is Cloud-Friendly
 

@@ -35,6 +35,23 @@ from models import (
     build_sequence_model_factories,
     build_tabular_model_factories,
 )
+from project_paths import (
+    BACKTEST_PREDICTIONS_PATH,
+    BEST_MODEL_METADATA_PATH,
+    DAILY_CLIMATOLOGY_PATH,
+    EVALUATION_METRICS_BY_HORIZON_PATH,
+    EVALUATION_METRICS_PATH,
+    FIGURES_OUTPUT_DIR,
+    FORECAST_OUTPUT_DIR,
+    FUTURE_FORECAST_FIGURE_PATH,
+    FUTURE_FORECASTS_PATH,
+    MODEL_COMPARISON_FIGURE_PATH,
+    MODELS_DIR,
+    MONTHLY_DATASET_PATH,
+    PROJECT_ROOT,
+    TEST_COMPARISON_FIGURE_PATH,
+    ensure_project_directories,
+)
 
 
 def set_global_seed(seed: int) -> None:
@@ -674,27 +691,24 @@ def plot_future_forecast(forecast_df: pd.DataFrame, output_path: Path) -> None:
 def run_pipeline(config: ForecastConfig | None = None) -> dict[str, object]:
     config = config or ForecastConfig()
     set_global_seed(config.random_seed)
+    ensure_project_directories()
 
-    project_root = Path(__file__).resolve().parent
-    models_dir = project_root / "artifacts" / "models"
-    models_dir.mkdir(parents=True, exist_ok=True)
-
-    monthly_df = load_monthly_dataframe(project_root / config.csv_path)
-    monthly_df.to_csv(project_root / "monthly_rainfall_dataset.csv")
+    monthly_df = load_monthly_dataframe(PROJECT_ROOT / config.csv_path)
+    monthly_df.to_csv(MONTHLY_DATASET_PATH)
     save_daily_climatology(
-        csv_path=project_root / config.csv_path,
-        output_path=project_root / "daily_rainfall_climatology.csv",
+        csv_path=PROJECT_ROOT / config.csv_path,
+        output_path=DAILY_CLIMATOLOGY_PATH,
     )
 
     tabular_rows, tabular_prediction_frames = evaluate_tabular_models(
         monthly_df=monthly_df,
         config=config,
-        tabular_output_dir=models_dir,
+        tabular_output_dir=MODELS_DIR,
     )
     sequence_rows, sequence_prediction_frames = evaluate_sequence_models(
         monthly_df=monthly_df,
         config=config,
-        sequence_output_dir=models_dir,
+        sequence_output_dir=MODELS_DIR,
     )
 
     summary_df = pd.DataFrame(tabular_rows + sequence_rows)
@@ -706,32 +720,29 @@ def run_pipeline(config: ForecastConfig | None = None) -> dict[str, object]:
     summary_df["selected_by_validation"] = summary_df["model_name"].eq(
         best_model_row["model_name"]
     )
-    summary_df.to_csv(project_root / "evaluation_metrics.csv", index=False)
+    summary_df.to_csv(EVALUATION_METRICS_PATH, index=False)
 
     predictions_df = pd.concat(
         tabular_prediction_frames + sequence_prediction_frames,
         ignore_index=True,
     ).sort_values(["split", "model_name", "origin_date", "horizon"])
-    predictions_df.to_csv(project_root / "backtest_predictions.csv", index=False)
+    predictions_df.to_csv(BACKTEST_PREDICTIONS_PATH, index=False)
 
     metrics_by_horizon_df = build_metrics_by_horizon(
         predictions_df=predictions_df,
         monthly_df=monthly_df,
         config=config,
     )
-    metrics_by_horizon_df.to_csv(
-        project_root / "evaluation_metrics_by_horizon.csv",
-        index=False,
-    )
+    metrics_by_horizon_df.to_csv(EVALUATION_METRICS_BY_HORIZON_PATH, index=False)
 
     forecast_df = forecast_with_selected_model(
         best_model_row=best_model_row,
         monthly_df=monthly_df,
         predictions_df=predictions_df,
         config=config,
-        models_dir=models_dir,
+        models_dir=MODELS_DIR,
     )
-    forecast_df.to_csv(project_root / "future_forecasts.csv", index=False)
+    forecast_df.to_csv(FUTURE_FORECASTS_PATH, index=False)
 
     best_model_payload = {
         "selected_model": str(best_model_row["model_name"]),
@@ -754,18 +765,18 @@ def run_pipeline(config: ForecastConfig | None = None) -> dict[str, object]:
         "forecast_horizon": config.forecast_horizon,
         "random_seed": config.random_seed,
     }
-    with open(project_root / "best_model.json", "w", encoding="utf-8") as handle:
+    with open(BEST_MODEL_METADATA_PATH, "w", encoding="utf-8") as handle:
         json.dump(best_model_payload, handle, indent=2)
 
-    plot_model_comparison(summary_df, project_root / "model_comparison.png")
+    plot_model_comparison(summary_df, MODEL_COMPARISON_FIGURE_PATH)
     plot_test_comparison(
         predictions_df=predictions_df,
         summary_df=summary_df,
-        output_path=project_root / "test_sequence_comparison.png",
+        output_path=TEST_COMPARISON_FIGURE_PATH,
     )
     plot_future_forecast(
         forecast_df=forecast_df,
-        output_path=project_root / "future_forecast_march_october_2026.png",
+        output_path=FUTURE_FORECAST_FIGURE_PATH,
     )
 
     return {

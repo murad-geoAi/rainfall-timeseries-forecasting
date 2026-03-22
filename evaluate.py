@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pandas as pd
 
+from project_paths import (
+    BEST_MODEL_METADATA_PATH,
+    EVALUATION_METRICS_PATH,
+    FUTURE_FORECASTS_PATH,
+)
+
 
 def main() -> None:
-    project_root = Path(__file__).resolve().parent
-    metrics_path = project_root / "evaluation_metrics.csv"
-    forecast_path = project_root / "future_forecasts.csv"
-    best_model_path = project_root / "best_model.json"
+    metrics_path = EVALUATION_METRICS_PATH
+    forecast_path = FUTURE_FORECASTS_PATH
+    best_model_path = BEST_MODEL_METADATA_PATH
 
     missing = [path.name for path in (metrics_path, forecast_path, best_model_path) if not path.exists()]
     if missing:

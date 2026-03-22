@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+from project_paths import RAW_DAILY_DATA_PATH
+
 TARGET_COLUMN = "rain_mm"
 BASE_FEATURE_COLUMNS = [
     "dewpoint_c",
@@ -38,7 +40,7 @@ ROLLING_WINDOWS = (3, 6, 12)
 
 @dataclass(frozen=True)
 class ForecastConfig:
-    csv_path: str = "Rainfall_TimeSeries_Tabular_Dataset (1).csv"
+    csv_path: str = str(RAW_DAILY_DATA_PATH.relative_to(Path(__file__).resolve().parent))
     seq_length: int = 24
     forecast_horizon: int = 8
     train_end: str = "2021-12-01"

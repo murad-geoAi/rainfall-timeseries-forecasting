@@ -3,7 +3,6 @@ from __future__ import annotations
 import calendar
 import html
 import json
-from pathlib import Path
 from textwrap import dedent
 
 import altair as alt
@@ -17,14 +16,13 @@ from daily_rainfall_profiles import (
     build_month_profile,
     load_daily_rainfall_dataframe,
 )
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-RAW_CSV_PATH = PROJECT_ROOT / "Rainfall_TimeSeries_Tabular_Dataset (1).csv"
-MONTHLY_DATASET_PATH = PROJECT_ROOT / "monthly_rainfall_dataset.csv"
-FUTURE_FORECASTS_PATH = PROJECT_ROOT / "future_forecasts.csv"
-DAILY_CLIMATOLOGY_PATH = PROJECT_ROOT / "daily_rainfall_climatology.csv"
-BEST_MODEL_PATH = PROJECT_ROOT / "best_model.json"
+from project_paths import (
+    BEST_MODEL_METADATA_PATH,
+    DAILY_CLIMATOLOGY_PATH,
+    FUTURE_FORECASTS_PATH,
+    MONTHLY_DATASET_PATH,
+    RAW_DAILY_DATA_PATH,
+)
 
 ACCENT = "#ff4d6d"
 ACCENT_SOFT = "#ffe6eb"
@@ -290,12 +288,12 @@ def load_monthly_history_from_raw(csv_path: Path) -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_static_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict]:
-    daily_df = load_daily_rainfall_dataframe(RAW_CSV_PATH)
+    daily_df = load_daily_rainfall_dataframe(RAW_DAILY_DATA_PATH)
 
     if MONTHLY_DATASET_PATH.exists():
         monthly_history_df = pd.read_csv(MONTHLY_DATASET_PATH, parse_dates=["date"])
     else:
-        monthly_history_df = load_monthly_history_from_raw(RAW_CSV_PATH)
+        monthly_history_df = load_monthly_history_from_raw(RAW_DAILY_DATA_PATH)
 
     if FUTURE_FORECASTS_PATH.exists():
         monthly_forecasts_df = pd.read_csv(FUTURE_FORECASTS_PATH, parse_dates=["date"])
@@ -312,8 +310,8 @@ def load_static_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict
         )
 
     best_model = {}
-    if BEST_MODEL_PATH.exists():
-        with open(BEST_MODEL_PATH, "r", encoding="utf-8") as handle:
+    if BEST_MODEL_METADATA_PATH.exists():
+        with open(BEST_MODEL_METADATA_PATH, "r", encoding="utf-8") as handle:
             best_model = json.load(handle)
 
     return daily_df, monthly_history_df, monthly_forecasts_df, best_model
@@ -323,7 +321,7 @@ def load_static_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict
 def load_default_daily_climatology() -> pd.DataFrame:
     if DAILY_CLIMATOLOGY_PATH.exists():
         return pd.read_csv(DAILY_CLIMATOLOGY_PATH)
-    daily_df = load_daily_rainfall_dataframe(RAW_CSV_PATH)
+    daily_df = load_daily_rainfall_dataframe(RAW_DAILY_DATA_PATH)
     return build_daily_climatology(
         daily_df,
         rain_threshold_mm=RAIN_THRESHOLD_MM,
