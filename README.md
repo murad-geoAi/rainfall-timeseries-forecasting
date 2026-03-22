@@ -113,7 +113,6 @@ python evaluate.py
 The app is prepared for Streamlit Community Cloud:
 
 - lightweight hosting dependencies in `requirements.txt`
-- hosted Python version in `runtime.txt`
 - Streamlit theme in `.streamlit/config.toml`
 - saved CSV artifacts so the cloud app does not retrain on startup
 
@@ -121,7 +120,7 @@ Deployment notes:
 
 - [docs/DEPLOY_STREAMLIT_CLOUD.md](docs/DEPLOY_STREAMLIT_CLOUD.md)
 
-When deploying, connect the GitHub repository and set the main file path to `app.py`.
+When deploying, connect the GitHub repository, set the main file path to `app.py`, and choose Python `3.11` or `3.12` in Streamlit Community Cloud's Advanced settings.
 
 ## Supporting Files
 

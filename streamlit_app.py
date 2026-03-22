@@ -5,7 +5,7 @@ import html
 import json
 from textwrap import dedent
 
-import altair as alt
+import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
@@ -402,47 +402,47 @@ def render_dashboard_card(
     return "\n".join(dashboard_lines)
 
 
-def build_chance_curve_chart(profile_df: pd.DataFrame, highlight_day: int) -> alt.Chart:
+def build_chance_curve_figure(profile_df: pd.DataFrame, highlight_day: int):
     chart_df = profile_df.copy()
-    chart_df["day_label"] = chart_df["date"].dt.strftime("%d %b")
     highlight_df = chart_df[chart_df["day"] == highlight_day]
-
-    base = alt.Chart(chart_df).encode(
-        x=alt.X(
-            "day:Q",
-            title=None,
-            axis=alt.Axis(labelColor=MUTED, tickColor="#d5dae2", grid=False),
-        ),
-        tooltip=[
-            alt.Tooltip("day_label:N", title="Date"),
-            alt.Tooltip("rain_probability_pct:Q", title="Rain chance", format=".1f"),
-            alt.Tooltip("estimated_daily_rain_mm:Q", title="Est. rain (mm)", format=".1f"),
-        ],
+    fig, ax = plt.subplots(figsize=(7.6, 3.8), facecolor=SURFACE)
+    ax.set_facecolor(SURFACE)
+    ax.fill_between(
+        chart_df["day"],
+        chart_df["rain_probability_pct"],
+        color=ACCENT,
+        alpha=0.16,
     )
-
-    area = base.mark_area(color=ACCENT, opacity=0.18).encode(
-        y=alt.Y(
-            "rain_probability_pct:Q",
-            title="Rain chance (%)",
-            axis=alt.Axis(labelColor=MUTED, gridColor="#eceff5", titleColor=MUTED),
+    ax.plot(
+        chart_df["day"],
+        chart_df["rain_probability_pct"],
+        color=ACCENT,
+        linewidth=2.8,
+    )
+    if not highlight_df.empty:
+        ax.scatter(
+            highlight_df["day"],
+            highlight_df["rain_probability_pct"],
+            s=72,
+            color=PANEL,
+            zorder=3,
         )
-    )
-    line = base.mark_line(color=ACCENT, strokeWidth=3).encode(y="rain_probability_pct:Q")
-    point = (
-        alt.Chart(highlight_df)
-        .mark_point(color=PANEL, size=110, filled=True)
-        .encode(x="day:Q", y="rain_probability_pct:Q")
-    )
 
-    return (
-        (area + line + point)
-        .properties(height=300)
-        .configure_view(strokeOpacity=0)
-        .configure_axis(labelFontSize=11, titleFontSize=12)
-    )
+    ax.set_xlim(1, int(chart_df["day"].max()))
+    ax.set_xlabel("")
+    ax.set_ylabel("Rain chance (%)", color=MUTED)
+    ax.grid(axis="y", color="#eceff5", linewidth=1)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#d5dae2")
+    ax.spines["bottom"].set_color("#d5dae2")
+    ax.tick_params(axis="x", colors=MUTED)
+    ax.tick_params(axis="y", colors=MUTED)
+    fig.tight_layout()
+    return fig
 
 
-def build_top_days_chart(profile_df: pd.DataFrame, top_n_days: int) -> alt.Chart:
+def build_top_days_figure(profile_df: pd.DataFrame, top_n_days: int):
     top_df = (
         profile_df.sort_values(
             ["rain_probability_pct", "estimated_daily_rain_mm", "day"],
@@ -454,39 +454,42 @@ def build_top_days_chart(profile_df: pd.DataFrame, top_n_days: int) -> alt.Chart
     top_df["date_label"] = top_df["date"].dt.strftime("%d %b")
     top_df = top_df.sort_values("rain_probability_pct", ascending=True)
 
-    bars = alt.Chart(top_df).mark_bar(color=ACCENT, cornerRadiusEnd=8).encode(
-        x=alt.X(
-            "rain_probability_pct:Q",
-            title="Rain chance (%)",
-            axis=alt.Axis(labelColor=MUTED, gridColor="#eceff5", titleColor=MUTED),
-        ),
-        y=alt.Y(
-            "date_label:N",
-            sort=None,
-            title=None,
-            axis=alt.Axis(labelColor=MUTED),
-        ),
-        tooltip=[
-            alt.Tooltip("date_label:N", title="Date"),
-            alt.Tooltip("weekday:N", title="Weekday"),
-            alt.Tooltip("rain_probability_pct:Q", title="Rain chance", format=".1f"),
-            alt.Tooltip("estimated_daily_rain_mm:Q", title="Est. rain (mm)", format=".1f"),
-        ],
+    fig_height = max(3.0, top_n_days * 0.72)
+    fig, ax = plt.subplots(figsize=(6.2, fig_height), facecolor=SURFACE)
+    ax.set_facecolor(SURFACE)
+    bars = ax.barh(
+        top_df["date_label"],
+        top_df["rain_probability_pct"],
+        color=ACCENT,
+        alpha=0.92,
     )
-    labels = bars.mark_text(
-        align="left",
-        baseline="middle",
-        dx=8,
-        color=TEXT,
-        fontWeight="bold",
-    ).encode(text=alt.Text("rain_probability_pct:Q", format=".0f"))
 
-    return (
-        (bars + labels)
-        .properties(height=max(220, top_n_days * 34))
-        .configure_view(strokeOpacity=0)
-        .configure_axis(labelFontSize=11, titleFontSize=12)
-    )
+    max_value = float(top_df["rain_probability_pct"].max()) if not top_df.empty else 0.0
+    ax.set_xlim(0, max(10.0, max_value * 1.18))
+    ax.set_xlabel("Rain chance (%)", color=MUTED)
+    ax.set_ylabel("")
+    ax.grid(axis="x", color="#eceff5", linewidth=1)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_color("#d5dae2")
+    ax.tick_params(axis="x", colors=MUTED)
+    ax.tick_params(axis="y", colors=MUTED, length=0)
+
+    for bar, value in zip(bars, top_df["rain_probability_pct"]):
+        ax.text(
+            bar.get_width() + max(0.6, max_value * 0.02),
+            bar.get_y() + bar.get_height() / 2,
+            f"{value:.0f}%",
+            va="center",
+            ha="left",
+            color=TEXT,
+            fontsize=11,
+            fontweight="bold",
+        )
+
+    fig.tight_layout()
+    return fig
 
 
 def month_name(month_number: int) -> str:
@@ -701,17 +704,19 @@ def main() -> None:
 
     charts_left, charts_right = st.columns([1.35, 1.0], gap="large")
     with charts_left:
-        st.altair_chart(
-            build_chance_curve_chart(
+        st.pyplot(
+            build_chance_curve_figure(
                 profile_df,
                 int(month_result.top_chance_day["day"]),
             ),
             use_container_width=True,
+            clear_figure=True,
         )
     with charts_right:
-        st.altair_chart(
-            build_top_days_chart(profile_df, top_n_days),
+        st.pyplot(
+            build_top_days_figure(profile_df, top_n_days),
             use_container_width=True,
+            clear_figure=True,
         )
 
     table_header_left, table_header_right = st.columns([1, 1], gap="medium")

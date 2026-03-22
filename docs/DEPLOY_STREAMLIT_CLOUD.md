@@ -4,7 +4,6 @@
 
 - `app.py` as the app entrypoint
 - `requirements.txt` with lightweight app dependencies
-- `runtime.txt` with the Python version for deployment
 - `.streamlit/config.toml` with theme and headless settings
 - precomputed CSV artifacts for forecasts and daily rainfall profiles
 
@@ -15,7 +14,8 @@
 3. Click **New app**.
 4. Select your repository and branch.
 5. Set the main file path to `app.py`.
-6. Deploy.
+6. Open **Advanced settings** and choose Python `3.11` or `3.12`.
+7. Deploy.
 
 Artifacts that should stay in the repository for the hosted app:
 
@@ -30,7 +30,13 @@ Artifacts that should stay in the repository for the hosted app:
 - The app reads saved forecast files and climatology files from the repo.
 - `requirements.txt` is kept light for hosting.
 - Heavy model-training dependencies were moved to `requirements-training.txt`.
-- `runtime.txt` makes the cloud Python version explicit.
+- The app avoids Altair so it is less sensitive to Python-version changes on Community Cloud.
+
+## Important Note About Python Version
+
+Streamlit Community Cloud now chooses Python from the deployment dialog, not from `runtime.txt`.
+
+If your app was already deployed with a newer Python version, delete the app and redeploy it, then pick Python `3.11` or `3.12` in **Advanced settings**.
 
 ## Local Run
 
