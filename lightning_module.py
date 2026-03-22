@@ -184,4 +184,9 @@ def predict_sequence_model(
 
     predictions = []
     model.eval()
-    with torch.no_grad()
+    with torch.no_grad():
+        for features, _ in loader:
+            features = features.to(device)
+            predictions.append(model(features).cpu().numpy())
+
+    return np.concatenate(predictions, axis=0)

@@ -23,6 +23,7 @@ from data_module import (
     make_future_sequence_input,
     split_tabular_frame,
 )
+from daily_rainfall_profiles import save_daily_climatology
 from lightning_module import (
     fit_sequence_fixed_epochs,
     predict_sequence_model,
@@ -680,6 +681,10 @@ def run_pipeline(config: ForecastConfig | None = None) -> dict[str, object]:
 
     monthly_df = load_monthly_dataframe(project_root / config.csv_path)
     monthly_df.to_csv(project_root / "monthly_rainfall_dataset.csv")
+    save_daily_climatology(
+        csv_path=project_root / config.csv_path,
+        output_path=project_root / "daily_rainfall_climatology.csv",
+    )
 
     tabular_rows, tabular_prediction_frames = evaluate_tabular_models(
         monthly_df=monthly_df,

@@ -3,6 +3,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import torch.nn as nn
+from typing import Callable
+
 from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.linear_model import ElasticNet, Ridge
 from sklearn.multioutput import MultiOutputRegressor
@@ -114,7 +116,7 @@ class SeasonalNaiveForecaster:
 
 def build_tabular_model_factories(
     random_state: int, forecast_horizon: int
-) -> dict[str, callable]:
+) -> dict[str, Callable[[], object]]:
     return {
         "SeasonalNaive": lambda: SeasonalNaiveForecaster(forecast_horizon),
         "Ridge": lambda: Pipeline(
@@ -171,7 +173,7 @@ def build_tabular_model_factories(
 
 def build_sequence_model_factories(
     input_size: int, forecast_horizon: int
-) -> dict[str, callable]:
+) -> dict[str, Callable[[], nn.Module]]:
     return {
         "VanillaLSTM": lambda: VanillaLSTM(
             input_size=input_size,
