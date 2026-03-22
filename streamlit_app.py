@@ -45,15 +45,24 @@ def apply_custom_styles() -> None:
                 linear-gradient(180deg, #fbfaf8 0%, #ffffff 46%, #f5f7fb 100%);
             color: {TEXT};
         }}
-        .block-container {{
+        .block-container,
+        [data-testid="stMainBlockContainer"] {{
             max-width: 1180px;
-            padding-top: 2rem;
+            padding-top: clamp(3.4rem, 7vh, 5rem);
             padding-bottom: 4rem;
+            overflow: visible;
+        }}
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMain"] {{
+            overflow: visible;
         }}
         h1, h2, h3 {{
             color: {TEXT};
             font-family: Georgia, "Times New Roman", serif;
             letter-spacing: -0.03em;
+        }}
+        .hero-safe-space {{
+            height: 0.35rem;
         }}
         .eyebrow {{
             display: inline-flex;
@@ -70,9 +79,10 @@ def apply_custom_styles() -> None:
         }}
         .hero-title {{
             font-size: clamp(2.9rem, 5.5vw, 4.8rem);
-            line-height: 0.96;
+            line-height: 1.04;
             font-weight: 700;
             letter-spacing: -0.06em;
+            padding-top: 0.08rem;
             margin: 0 0 0.8rem 0;
             max-width: 12ch;
         }}
@@ -252,6 +262,13 @@ def apply_custom_styles() -> None:
             overflow: hidden;
         }}
         @media (max-width: 900px) {{
+            .block-container,
+            [data-testid="stMainBlockContainer"] {{
+                padding-top: 2.8rem;
+            }}
+            .hero-safe-space {{
+                height: 0.15rem;
+            }}
             .hero-title {{
                 font-size: 2.6rem;
                 max-width: none;
@@ -506,6 +523,7 @@ def main() -> None:
 
     daily_df, monthly_history_df, monthly_forecasts_df, best_model = load_static_inputs()
 
+    st.markdown("<div class='hero-safe-space'></div>", unsafe_allow_html=True)
     hero_left, hero_right = st.columns([1.06, 0.94], gap="large")
 
     with hero_left:
