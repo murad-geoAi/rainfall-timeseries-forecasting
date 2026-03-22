@@ -1,7 +1,5 @@
 # Rainfall Forecasting App
 
-A portfolio-ready rainfall forecasting project with a leakage-free training pipeline, saved evaluation artifacts, and a Streamlit app for exploring rainy-day patterns inside each month.
-
 The project forecasts monthly rainfall for **March to October 2026** and estimates which days in a selected month have the highest chance of rainfall based on historical daily behavior.
 
 ## Highlights
@@ -107,20 +105,6 @@ python evaluate.py
 - Daily climatology: [data/processed/daily_rainfall_climatology.csv](data/processed/daily_rainfall_climatology.csv)
 - Best model metadata: [artifacts/metadata/best_model.json](artifacts/metadata/best_model.json)
 - Forecast figure: [outputs/figures/future_forecast_march_october_2026.png](outputs/figures/future_forecast_march_october_2026.png)
-
-## Deployment
-
-The app is prepared for Streamlit Community Cloud:
-
-- lightweight hosting dependencies in `requirements.txt`
-- Streamlit theme in `.streamlit/config.toml`
-- saved CSV artifacts so the cloud app does not retrain on startup
-
-Deployment notes:
-
-- [docs/DEPLOY_STREAMLIT_CLOUD.md](docs/DEPLOY_STREAMLIT_CLOUD.md)
-
-When deploying, connect the GitHub repository, set the main file path to `app.py`, and choose Python `3.11` or `3.12` in Streamlit Community Cloud's Advanced settings.
 
 ## Supporting Files
 
