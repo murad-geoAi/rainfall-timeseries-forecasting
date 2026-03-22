@@ -5,7 +5,7 @@
 
 // ================================
 // 1) STUDY AREA
-// ================================
+// ===============================
 // Ensure your studyArea is defined before this runs
 Map.centerObject(studyArea, 9);
 Map.addLayer(studyArea, {color: 'red'}, 'Study Area');

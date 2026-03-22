@@ -1,0 +1,15 @@
+{
+  "selected_model": "BiLSTM",
+  "model_family": "sequence",
+  "train_origin_end": "2021-12-01",
+  "validation_origin_end": "2023-12-01",
+  "last_observed_month": "2026-02-01",
+  "forecast_start_month": "2026-03-01",
+  "forecast_end_month": "2026-10-01",
+  "validation_RMSE": 88.25985990087972,
+  "test_RMSE": 110.91740944003051,
+  "validation_best_epoch": 12,
+  "seq_length": 24,
+  "forecast_horizon": 8,
+  "random_seed": 42
+}
