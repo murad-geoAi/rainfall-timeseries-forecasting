@@ -1,33 +1,76 @@
 # LinkedIn Post
 
-Built a rainfall forecasting app that goes beyond monthly totals.
+Use one of the versions below depending on how much space and detail you want in your post.
 
-This project forecasts rainfall for **March to October 2026** and also highlights the **days within a selected month that have the highest chance of rainfall**.
+## Main Post
 
-What I improved in the project:
+Built a rainfall forecasting project that goes beyond predicting monthly totals.
 
-- rebuilt the pipeline to be reproducible and leakage-free
-- compared multiple models before selecting the final one
-- generated monthly rainfall forecasts for 2026
-- designed a clean Streamlit app for exploring rainfall patterns
-- ranked the most likely rainy days using historical day-level rainfall behavior
+This app forecasts rainfall for **March to October 2026** and also estimates **which days inside a selected month have the highest chance of rainfall**.
 
-The final app lets a user:
+What I focused on in this project:
 
-- pick any month and year
+- building a reproducible and leakage-free forecasting pipeline
+- comparing multiple models with time-aware validation
+- selecting the final model based on validation performance, not test leakage
+- generating forecast outputs and evaluation artifacts
+- designing a clean Streamlit app for non-technical users
+
+The final selected model was **BiLSTM**, with:
+
+- Validation RMSE: `88.26`
+- Test RMSE: `110.92`
+
+The app allows a user to:
+
+- choose any month and year
 - use the saved forecast or enter a custom monthly rainfall total
-- see the day with the highest rainfall chance
-- inspect the top rainy days and download the profile as CSV
+- identify the day with the highest rain chance
+- inspect the top rainy days for the month
+- download the ranked daily rainfall profile as CSV
 
-The app is also structured to be deployment-ready for **Streamlit Community Cloud**.
-
-This project brought together:
+What I like most about this project is that it combines:
 
 - time-series forecasting
-- evaluation and model selection
+- model evaluation and selection
 - leakage-free ML workflow design
-- data storytelling through a user-facing app
+- climate data storytelling
+- product thinking through a user-facing app
 
-I'd love feedback on the forecasting approach, the app design, or ideas for improving the daily rainfall ranking further.
+I also packaged it for **Streamlit Community Cloud** so it can be shared directly from GitHub.
 
-#MachineLearning #TimeSeries #Forecasting #DataScience #Streamlit #Python #DeepLearning #Rainfall #ClimateData #PortfolioProject
+If you'd like to explore the code or the app:
+
+- GitHub: `[paste your GitHub repo link here]`
+- App: `[paste your Streamlit app link here]`
+
+I'd love feedback on the forecasting approach, interface design, or ideas for improving day-level rainfall ranking.
+
+#MachineLearning #TimeSeries #Forecasting #DataScience #Streamlit #Python #DeepLearning #ClimateData #Rainfall #PortfolioProject
+
+## Short Version
+
+Built a rainfall forecasting app that predicts **monthly rainfall** and ranks the **most likely rainy days inside a selected month**.
+
+Highlights:
+
+- leakage-free forecasting pipeline
+- multi-model comparison and validation-based selection
+- BiLSTM chosen as the final model
+- Streamlit app for exploring rainy-day patterns
+
+This project helped me combine forecasting, evaluation, and product-style presentation in one workflow.
+
+GitHub: `[paste repo link]`
+App: `[paste app link]`
+
+#MachineLearning #TimeSeries #Forecasting #Streamlit #Python #DataScience
+
+## First Comment
+
+Here are the project links:
+
+- GitHub repo: `[paste repo link]`
+- Live app: `[paste app link]`
+
+The repository includes the training pipeline, evaluation results, forecast outputs, and the Streamlit app code.
