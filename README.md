@@ -106,3 +106,9 @@ python evaluate.py
 - Best model metadata: [artifacts/metadata/best_model.json](artifacts/metadata/best_model.json)
 - Forecast figure: [outputs/figures/future_forecast_march_october_2026.png](outputs/figures/future_forecast_march_october_2026.png)
 
+## Supporting Files
+
+- Deployment guide: [docs/DEPLOY_STREAMLIT_CLOUD.md](docs/DEPLOY_STREAMLIT_CLOUD.md)
+- LinkedIn post draft: [docs/LINKEDIN_POST.md](docs/LINKEDIN_POST.md)
+- GEE export script: [scripts/gee_export.js](scripts/gee_export.js)
+- License: [LICENSE](LICENSE)
