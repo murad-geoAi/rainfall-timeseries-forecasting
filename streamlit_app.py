@@ -530,15 +530,14 @@ def main() -> None:
                 Find the <span class="accent">rainiest days</span> before the month begins
             </div>
             <div class="hero-subtitle">
-                Pick a month. Use the saved forecast or your own monthly total.
-                The app ranks the days most likely to receive rainfall.
+                Pick a month. The app ranks the days most likely to receive rainfall based on historical data and deep learning forecasts.
             </div>
             """
             ),
             unsafe_allow_html=True,
         )
 
-        control_row = st.columns([1.2, 0.85, 1.55], gap="medium")
+        control_row = st.columns([1.2, 0.85], gap="medium")
         with control_row[0]:
             st.markdown("<div class='control-caption'>Month</div>", unsafe_allow_html=True)
             target_month = int(
@@ -562,25 +561,8 @@ def main() -> None:
                     label_visibility="collapsed",
                 )
             )
-        with control_row[2]:
-            st.markdown("<div class='control-caption'>Monthly total source</div>", unsafe_allow_html=True)
-            total_mode = st.radio(
-                "Monthly total source",
-                options=["Use saved forecast", "Enter custom total"],
-                horizontal=True,
-                label_visibility="collapsed",
-            )
 
         custom_total_mm = None
-        if total_mode == "Enter custom total":
-            custom_total_mm = float(
-                st.number_input(
-                    "Custom monthly rainfall (mm)",
-                    min_value=0.0,
-                    value=180.0,
-                    step=5.0,
-                )
-            )
 
         with st.expander("Fine tune", expanded=False):
             advanced_cols = st.columns(3, gap="medium")
